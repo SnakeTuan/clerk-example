@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+go to clerk website, sign up, go to dashboard
 
-First, run the development server:
+create an application 
+![alt text](/docs/1.png)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+install clerk in your nextjs project:
+npm install @clerk/nextjs
+
+Create a `.env.local` file in your project root and add your Clerk API keys:
+```
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_publishable_key
+CLERK_SECRET_KEY=your_secret_key
+```
+you can get your application api key in configure -> api key
+![alt text](/docs/2.png)
+
+ create middleware.ts file at the root of your project or src/ directory:
+ ```
+import { clerkMiddleware } from "@clerk/nextjs/server";
+
+export default clerkMiddleware();
+
+export const config = {
+  matcher: [
+    // Skip Next.js internals and all static files, unless found in search params
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
+  ],
+};
+ ```
+
+All Clerk hooks and components must be the children of the ClerkProvider component,
+so we gonna wrap our whole application with <ClerkProvider> in /app/layout.tsx
+![alt text](/docs/3.png)
+
+Create a quick login and logout route and page
+
+app/sign-up/[[...sign-up]]/page.tsx
+```
+import { SignUp } from '@clerk/nextjs'
+
+export default function Page() {
+  return <SignUp />
+}
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+app/sign-in/[[...sign-in]]/page.tsx
+```
+import { SignIn } from '@clerk/nextjs'
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+export default function Page() {
+  return <SignIn />
+}
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
