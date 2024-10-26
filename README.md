@@ -1,4 +1,4 @@
-
+## quick setup
 go to clerk website, sign up, go to dashboard
 
 create an application 
@@ -21,6 +21,7 @@ import { clerkMiddleware } from "@clerk/nextjs/server";
 
 export default clerkMiddleware();
 
+// By default, clerkMiddleware() makes all routes public
 export const config = {
   matcher: [
     // Skip Next.js internals and all static files, unless found in search params
@@ -55,3 +56,33 @@ export default function Page() {
 }
 ```
 
+## Sync Clerk Data to Your Project
+
+To sync Clerk data with your application, you can utilize webhooks. Webhooks allow you to receive real-time updates from Clerk whenever certain events occur, such as user sign-ups, logins, or profile updates.
+
+### Step 1: Expose Your Local Server
+
+First, you need to expose your local server to the internet. You can do this using the following command:
+```ssh -R 80:localhost:3000 serveo.net```
+
+### Step 2: create the webhook
+
+go to the clerk dashboard and create a webhook, with the url
+![alt text](/docs/4.png)
+
+copy the secret sign of webhook and add it to your .env.local file: ```WEBHOOK_SECRET=```
+![alt text](/docs/5.png)
+
+make sure the webhook route is public in your Middleware
+
+### Step 3: Create the endpoint
+
+Clerk use svix to verify the webhook signature,
+install svix: ```npm install svix```
+
+app/api/webhooks/route.ts
+
+### Step 4: Testing the webhook
+
+go to your application and try creating, updating and deleting accounts. If the webhook successful, you will see Webhook json body, webhook id in the console. And in the clerk dashboard, you can see the successful webhook:
+![alt text](/docs/6.png)
